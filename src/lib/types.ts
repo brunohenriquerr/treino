@@ -2,8 +2,19 @@ export interface Treino {
   id: string
   nome: string
   descricao: string | null
+  ficha_id: string | null
+  usuario: string
   criado_em: string
   atualizado_em: string
+}
+
+export interface Ficha {
+  id: string
+  nome: string
+  descricao: string | null
+  usuario: string
+  ativa: boolean
+  criado_em: string
 }
 
 export interface Exercicio {
