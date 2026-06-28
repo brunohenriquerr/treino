@@ -11,6 +11,7 @@ interface Ficha {
   id: string
   nome: string
   descricao: string | null
+  observacoes: string | null
   ativa: boolean
   criado_em: string
 }
@@ -37,6 +38,8 @@ export default function Home() {
   const [editFichaId, setEditFichaId] = useState<string | null>(null)
   const [nomeFicha, setNomeFicha] = useState('')
   const [descricaoFicha, setDescricaoFicha] = useState('')
+  const [observacoesFicha, setObservacoesFicha] = useState('')
+  const [fichaObsAberta, setFichaObsAberta] = useState<string | null>(null)
   const [savingFicha, setSavingFicha] = useState(false)
 
   async function load() {
@@ -81,15 +84,15 @@ export default function Home() {
   }
 
   // FICHA actions
-  function resetFormFicha() { setNomeFicha(''); setDescricaoFicha(''); setShowFormFicha(false); setEditFichaId(null) }
+  function resetFormFicha() { setNomeFicha(''); setDescricaoFicha(''); setObservacoesFicha(''); setShowFormFicha(false); setEditFichaId(null) }
 
   async function salvarFicha() {
     if (!nomeFicha.trim() || !user) return
     setSavingFicha(true)
     if (editFichaId) {
-      await supabase.from('fichas').update({ nome: nomeFicha, descricao: descricaoFicha }).eq('id', editFichaId)
+      await supabase.from('fichas').update({ nome: nomeFicha, descricao: descricaoFicha, observacoes: observacoesFicha }).eq('id', editFichaId)
     } else {
-      await supabase.from('fichas').insert({ nome: nomeFicha, descricao: descricaoFicha, usuario: user, ativa: true })
+      await supabase.from('fichas').insert({ nome: nomeFicha, descricao: descricaoFicha, observacoes: observacoesFicha, usuario: user, ativa: true })
     }
     setSavingFicha(false); resetFormFicha(); load()
   }
@@ -106,7 +109,7 @@ export default function Home() {
   }
 
   function startEditFicha(f: Ficha) {
-    setEditFichaId(f.id); setNomeFicha(f.nome); setDescricaoFicha(f.descricao || ''); setShowFormFicha(true)
+    setEditFichaId(f.id); setNomeFicha(f.nome); setDescricaoFicha(f.descricao || ''); setObservacoesFicha(f.observacoes || ''); setShowFormFicha(true)
   }
 
   // TREINO actions
@@ -183,7 +186,7 @@ export default function Home() {
               <h2 className="font-medium text-gray-900">{editFichaId ? 'Editar ficha' : 'Nova ficha'}</h2>
               <button onClick={resetFormFicha}><X size={18} className="text-gray-400 hover:text-gray-600" /></button>
             </div>
-            <div className="grid sm:grid-cols-2 gap-3 mb-4">
+            <div className="grid sm:grid-cols-2 gap-3 mb-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nome da ficha</label>
                 <input className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Ex: Ficha Agosto 2026" value={nomeFicha} onChange={e => setNomeFicha(e.target.value)} />
@@ -192,6 +195,16 @@ export default function Home() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Descrição (opcional)</label>
                 <input className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Objetivo do período..." value={descricaoFicha} onChange={e => setDescricaoFicha(e.target.value)} />
               </div>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Observações da ficha (opcional)</label>
+              <textarea
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                rows={6}
+                placeholder="Instruções de progressão, intensidade, aquecimento, cardio, nutrição..."
+                value={observacoesFicha}
+                onChange={e => setObservacoesFicha(e.target.value)}
+              />
             </div>
             <div className="flex gap-2 justify-end">
               <button onClick={resetFormFicha} className="bg-white hover:bg-gray-50 text-gray-700 font-medium px-4 py-2 rounded-lg border border-gray-200 transition-colors text-sm">Cancelar</button>
@@ -295,7 +308,24 @@ export default function Home() {
 
                   {/* Treinos da ficha */}
                   {aberta && (
-                    <div className="border-t border-gray-50 px-5 py-4">
+                    <div className="border-t border-gray-50">
+                    {f.observacoes && (
+                      <div className="px-5 py-4 border-b border-gray-50">
+                        <button
+                          onClick={() => setFichaObsAberta(fichaObsAberta === f.id ? null : f.id)}
+                          className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 mb-2"
+                        >
+                          <span className="text-xs bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full border border-amber-100">📋 Observações da ficha</span>
+                          <span className="text-xs text-gray-400">{fichaObsAberta === f.id ? 'ocultar' : 'ver'}</span>
+                        </button>
+                        {fichaObsAberta === f.id && (
+                          <div className="bg-amber-50 border border-amber-100 rounded-xl p-4">
+                            <pre className="text-xs text-gray-700 whitespace-pre-wrap font-sans leading-relaxed">{f.observacoes}</pre>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <div className="px-5 py-4">
                       {treinos.length === 0 ? (
                         <div className="text-center py-6">
                           <p className="text-sm text-gray-400">Nenhum treino nesta ficha.</p>
@@ -343,6 +373,7 @@ export default function Home() {
                         </div>
                       )}
                     </div>
+                  </div>
                   )}
                 </div>
               )
