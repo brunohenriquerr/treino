@@ -115,10 +115,10 @@ export default function Home() {
               <div className="space-y-2">
                 {exerciciosForm.map((ex, i) => (
                   <div key={i} className="flex gap-2 items-center">
-                    <input className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent flex-1" placeholder="Nome do exercício" value={ex.nome} onChange={e => { const n = [...exerciciosForm]; n[i].nome = e.target.value; setExerciciosForm(n) }} />
-                    <input type="number" className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent w-16 text-center" placeholder="Séries" value={ex.series} min={1} max={10} onChange={e => { const n = [...exerciciosForm]; n[i].series = +e.target.value; setExerciciosForm(n) }} />
-                    <span className="text-xs text-gray-400">×</span>
-                    <input className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent w-20 text-center" placeholder="Reps" value={ex.repeticoes} onChange={e => { const n = [...exerciciosForm]; n[i].repeticoes = e.target.value; setExerciciosForm(n) }} />
+                    <input className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Nome do exercício" value={ex.nome} onChange={e => { const n = [...exerciciosForm]; n[i].nome = e.target.value; setExerciciosForm(n) }} />
+                    <input type="number" className="w-16 flex-shrink-0 px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-center" placeholder="Sér" value={ex.series} min={1} max={10} onChange={e => { const n = [...exerciciosForm]; n[i].series = +e.target.value; setExerciciosForm(n) }} />
+                    <span className="text-xs text-gray-400 flex-shrink-0">×</span>
+                    <input className="w-20 flex-shrink-0 px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-center" placeholder="Reps" value={ex.repeticoes} onChange={e => { const n = [...exerciciosForm]; n[i].repeticoes = e.target.value; setExerciciosForm(n) }} />
                     {exerciciosForm.length > 1 && (
                       <button onClick={() => setExerciciosForm(exerciciosForm.filter((_, j) => j !== i))}><X size={15} className="text-gray-400 hover:text-red-500" /></button>
                     )}
